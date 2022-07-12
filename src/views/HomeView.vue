@@ -1,9 +1,39 @@
 <script setup lang="ts">
-import Navbar from "@/components/Navbar.vue";
+import LoginForm, {
+  type LoginFormProps,
+} from "@/components/Forms/LoginForm.vue";
+import { useAuth } from "@/composables/auth";
+import { useRouter } from "vue-router";
+
+const { useSignIn, user } = useAuth();
+const { signIn, isSigningIn, errors, setErrors } = useSignIn();
+const router = useRouter();
+
+const handleChangeInput = (touched: { email: boolean; password: boolean }) => {
+  const errorValue = {
+    email: touched.email ? "" : errors.value.email,
+    password: touched.password ? "" : errors.value.password,
+  };
+  setErrors(errorValue);
+};
+
+const handleSubmitLogin = async (value: LoginFormProps) => {
+  const { email, password } = value;
+  await signIn(email, password);
+
+  console.log(user.value);
+
+  if (user.value.token && user.value.user) {
+    router.push("/tasks");
+  }
+};
 </script>
 
 <template>
-  <main>
-    <Navbar />
-  </main>
+  <LoginForm
+    :errors="errors"
+    :is-loading="isSigningIn"
+    @on-change-input="handleChangeInput"
+    @on-submit-login="handleSubmitLogin"
+  />
 </template>
