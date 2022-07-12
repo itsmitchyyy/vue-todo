@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Navbar from "@/components/Navbar.vue";
+import IconPlus from "@/components/icons/IconPlus.vue";
+import TaskLists from "@/components/TaskLists.vue";
 import { useRouter } from "vue-router";
-import ProjectLists from "../components/ProjectLists.vue";
 
 const router = useRouter();
 </script>
@@ -11,14 +12,14 @@ const router = useRouter();
   <div class="container mx-auto mt-5">
     <div>
       <button
-        @click="router.push('/projects/add-projects')"
+        @click="router.push('/tasks/add-tasks')"
         class="btn btn-custom-style btn-outline-primary"
       >
-        <span class="btn-label"><IconPlus /></span>Add Project
+        <span class="btn-label"><IconPlus /></span>Add Task
       </button>
 
       <div class="d-flex mt-5">
-        <ProjectLists />
+        <TaskLists />
       </div>
     </div>
   </div>

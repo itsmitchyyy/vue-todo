@@ -8,4 +8,8 @@ import { RouterView } from "vue-router";
 
 <style>
 @import "@/assets/base.css";
+
+#app {
+  height: 100%;
+}
 </style>
