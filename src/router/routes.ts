@@ -56,6 +56,10 @@ const routes = [
     component: () => import("@/views/AddTaskView.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/:patchMatch(.*)*",
+    component: () => import("@/views/NotFoundView.vue"),
+  },
 ];
 
 export default routes;

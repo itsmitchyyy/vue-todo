@@ -69,7 +69,7 @@ const handleLogout = () => {
               Dropdown
             </a>
             <ul
-              class="dropdown-menu dropdown-menu-end dropdown-menu-sm-start"
+              class="dropdown-menu dropdown-menu-md-start dropdown-menu-lg-end"
               aria-labelledby="navbarDropdown"
             >
               <li><a class="dropdown-item" href="#">Action</a></li>
