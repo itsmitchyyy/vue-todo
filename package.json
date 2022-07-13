@@ -19,6 +19,7 @@
     "@vueuse/core": "^8.9.2",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.0-beta1",
+    "moment": "^2.29.4",
     "pinia": "^2.0.14",
     "postcss-nested": "^5.0.6",
     "vue": "^3.2.37",
