@@ -14,6 +14,9 @@ const urls = {
     projects: `${API_URL}projects`,
     project: (id: number): string => `${API_URL}projects/${String(id)}`,
   },
+  task: {
+    tasks: `${API_URL}tasks`,
+  },
 };
 
 export default urls;

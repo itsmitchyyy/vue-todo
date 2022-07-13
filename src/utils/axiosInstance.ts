@@ -1,26 +1,30 @@
 import { useAuth } from "@/composables/auth";
 import { useAuthStore } from "@/stores/auth";
 import axios, { type AxiosRequestConfig } from "axios";
-import { useRouter } from "vue-router";
 
-axios.interceptors.request.use((request: AxiosRequestConfig) => {
-  const authStore = useAuthStore();
-  const accessToken = authStore.getToken || null;
+axios.interceptors.request.use(
+  (request: AxiosRequestConfig) => {
+    const authStore = useAuthStore();
+    const accessToken = authStore.getToken || null;
 
-  request.headers = { Authorization: `Bearer ${accessToken}` };
+    request.headers = {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/json",
+    };
 
-  return request;
-});
+    return request;
+  },
+  (error) => Promise.reject(error),
+);
 
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    const router = useRouter();
     const { useLogout } = useAuth();
     const { logout } = useLogout();
     if (error.response.status === 403 || error.response.status === 401) {
       logout();
-      router.push({ name: "login" });
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
