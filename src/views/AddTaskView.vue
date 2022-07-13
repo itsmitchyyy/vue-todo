@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import Navbar from "@/components/Navbar.vue";
 import TasksForm from "@/components/Forms/TasksForm.vue";
+import { useTask } from "@/composables/tasks";
+import type { AddTask } from "@/domain/task";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const { useAddTask } = useTask();
+const { addTask, isAddingTask } = useAddTask();
+
+const handleAddTask = async (task: AddTask) => {
+  await addTask(task);
+
+  router.push("/tasks");
+};
 </script>
 
 <template>
@@ -8,7 +21,7 @@ import TasksForm from "@/components/Forms/TasksForm.vue";
   <div class="container mx-auto mt-5">
     <div class="tasks--container">
       <div class="tasks-form">
-        <TasksForm />
+        <TasksForm :is-loading="isAddingTask" @on-submit-task="handleAddTask" />
       </div>
     </div>
   </div>

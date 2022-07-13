@@ -5,11 +5,20 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
+import { useAuth } from "@/composables/auth";
 
 const route = useRoute();
+const router = useRouter();
 const path = computed(() => route.path);
+const { useLogout } = useAuth();
+const { logout } = useLogout();
+
+const handleLogout = () => {
+  logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -60,13 +69,17 @@ const path = computed(() => route.path);
               Dropdown
             </a>
             <ul
-              class="dropdown-menu dropdown-menu-end"
+              class="dropdown-menu dropdown-menu-end dropdown-menu-sm-start"
               aria-labelledby="navbarDropdown"
             >
               <li><a class="dropdown-item" href="#">Action</a></li>
               <li><a class="dropdown-item" href="#">Another action</a></li>
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li>
+                <a class="dropdown-item" href="#" @click.prevent="handleLogout"
+                  >Logout</a
+                >
+              </li>
             </ul>
           </div>
         </div>

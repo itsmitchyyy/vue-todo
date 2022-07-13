@@ -3,8 +3,14 @@ import Navbar from "@/components/Navbar.vue";
 import IconPlus from "@/components/icons/IconPlus.vue";
 import TaskLists from "@/components/TaskLists.vue";
 import { useRouter } from "vue-router";
+import { useTask } from "@/composables/tasks";
+import { onMounted } from "vue";
 
 const router = useRouter();
+const { useFetchTasks, tasksStore } = useTask();
+const { fetchTasks, isFetchingTasks } = useFetchTasks();
+
+onMounted(fetchTasks);
 </script>
 
 <template>
@@ -19,7 +25,7 @@ const router = useRouter();
       </button>
 
       <div class="d-flex mt-5">
-        <TaskLists />
+        <TaskLists :is-loading="isFetchingTasks" :tasks="tasksStore.tasks" />
       </div>
     </div>
   </div>

@@ -2,8 +2,13 @@
 import RegisterForm from "@/components/Forms/RegisterForm.vue";
 import type { FormProps } from "@/components/Forms/RegisterForm.vue";
 import { useAuth } from "@/composables/auth";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 const { useSignUp } = useAuth();
 const { errors, setErrors, signUp } = useSignUp();
+const authStore = useAuthStore();
+
+const router = useRouter();
 
 const handleChangeInput = (touched: {
   email: boolean;
@@ -20,6 +25,10 @@ const handleChangeInput = (touched: {
 
 const handleSubmitRegister = async (value: FormProps) => {
   await signUp(value);
+
+  if (authStore.getToken && authStore.getUser) {
+    router.push("/tasks");
+  }
 };
 </script>
 

@@ -91,5 +91,15 @@ export const useAuth = () => {
     return { signUp, isSigningUp, setErrors, errors };
   };
 
-  return { user, useSignIn, useSignUp };
+  const useLogout = () => {
+    const logout = async () => {
+      await axiosInstance.post(urls.auth.logout);
+
+      authStore.setCurrentUser(undefined);
+    };
+
+    return { logout };
+  };
+
+  return { user, useSignIn, useSignUp, useLogout };
 };
