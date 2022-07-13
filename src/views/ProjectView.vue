@@ -2,8 +2,21 @@
 import Navbar from "@/components/Navbar.vue";
 import { useRouter } from "vue-router";
 import ProjectLists from "../components/ProjectLists.vue";
+import IconPlus from "../components/icons/IconPlus.vue";
+import { useProject } from "@/composables/projects";
+import { onMounted } from "vue";
 
 const router = useRouter();
+
+const { useFetchProjects, useDeleteProject, projectStore } = useProject();
+const { fetchProjects, isFetchingProjects } = useFetchProjects();
+const { deleteProject, isDeletingProject } = useDeleteProject();
+
+onMounted(fetchProjects);
+
+const handleDeleteProject = async (id: number) => {
+  await deleteProject(id);
+};
 </script>
 
 <template>
@@ -18,7 +31,12 @@ const router = useRouter();
       </button>
 
       <div class="d-flex mt-5">
-        <ProjectLists />
+        <ProjectLists
+          :is-loading="isFetchingProjects"
+          :is-deleting="isDeletingProject"
+          :projects="projectStore.projects"
+          @on-delete-project="handleDeleteProject"
+        />
       </div>
     </div>
   </div>

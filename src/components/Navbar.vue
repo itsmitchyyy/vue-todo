@@ -41,7 +41,7 @@ const path = computed(() => route.path);
           <li class="nav-item">
             <a
               class="nav-link"
-              :class="{ active: path === '/projects' }"
+              :class="{ active: path.includes('projects') }"
               href="/projects"
               >Projects</a
             >

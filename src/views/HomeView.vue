@@ -21,8 +21,6 @@ const handleSubmitLogin = async (value: LoginFormProps) => {
   const { email, password } = value;
   await signIn(email, password);
 
-  console.log(user.value);
-
   if (user.value.token && user.value.user) {
     router.push("/tasks");
   }

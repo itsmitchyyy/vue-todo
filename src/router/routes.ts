@@ -38,6 +38,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/projects/:id/edit",
+    name: "edit-projects",
+    component: () => import("@/views/EditProjectView.vue"),
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
     path: "/tasks",
     name: "tasks",
     component: () => import("@/views/TaskView.vue"),
