@@ -9,6 +9,10 @@ const urls = {
     user: `${API_URL}user`,
     resendVerification: `${API_URL}email/verification-notification`,
   },
+  project: {
+    projects: `${API_URL}projects`,
+    project: (id: number): string => `${API_URL}projects/${String(id)}`,
+  },
 };
 
 export default urls;
