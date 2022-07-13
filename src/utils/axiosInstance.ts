@@ -1,12 +1,30 @@
-import { useLocalStorage } from "@vueuse/core";
-import axios from "axios";
+import { useAuth } from "@/composables/auth";
+import { useAuthStore } from "@/stores/auth";
+import axios, { type AxiosRequestConfig } from "axios";
+import { useRouter } from "vue-router";
 
-const localStorage = useLocalStorage("user", { token: null, user: null });
+axios.interceptors.request.use((request: AxiosRequestConfig) => {
+  const authStore = useAuthStore();
+  const accessToken = authStore.getToken || null;
 
-const accessToken = localStorage.value.token || null;
+  request.headers = { Authorization: `Bearer ${accessToken}` };
 
-const axiosInstance = axios.create({
-  headers: { Authorization: `Bearer ${accessToken}` },
+  return request;
 });
 
-export default axiosInstance;
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const router = useRouter();
+    const { useLogout } = useAuth();
+    const { logout } = useLogout();
+    if (error.response.status === 403 || error.response.status === 401) {
+      logout();
+      router.push({ name: "login" });
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export default axios;
