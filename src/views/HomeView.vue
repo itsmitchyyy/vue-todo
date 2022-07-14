@@ -5,7 +5,7 @@ import LoginForm, {
 import { useAuth } from "@/composables/auth";
 import { useRouter } from "vue-router";
 
-const { useSignIn, user } = useAuth();
+const { useSignIn, authStore } = useAuth();
 const { signIn, isSigningIn, errors, setErrors } = useSignIn();
 const router = useRouter();
 
@@ -21,7 +21,7 @@ const handleSubmitLogin = async (value: LoginFormProps) => {
   const { email, password } = value;
   await signIn(email, password);
 
-  if (user.value.token && user.value.user) {
+  if (authStore?.getUser && authStore.getToken) {
     router.push("/tasks");
   }
 };
