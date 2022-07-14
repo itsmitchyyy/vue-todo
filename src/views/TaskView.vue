@@ -7,10 +7,15 @@ import { useTask } from "@/composables/tasks";
 import { onMounted } from "vue";
 
 const router = useRouter();
-const { useFetchTasks, tasksStore } = useTask();
+const { useFetchTasks, useDeleteTask, tasks } = useTask();
 const { fetchTasks, isFetchingTasks } = useFetchTasks();
+const { deleteTask, isDeletingTask } = useDeleteTask();
 
 onMounted(fetchTasks);
+
+const handleDeleteTask = async (id: number) => {
+  await deleteTask(id);
+};
 </script>
 
 <template>
@@ -25,7 +30,12 @@ onMounted(fetchTasks);
       </button>
 
       <div class="d-flex mt-5">
-        <TaskLists :is-loading="isFetchingTasks" :tasks="tasksStore.tasks" />
+        <TaskLists
+          :is-loading="isFetchingTasks"
+          :is-deleting="isDeletingTask"
+          @on-delete-task="handleDeleteTask"
+          :tasks="tasks"
+        />
       </div>
     </div>
   </div>

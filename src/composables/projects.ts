@@ -99,9 +99,12 @@ export const useProject = () => {
       try {
         isUpdatingProject.value = true;
 
-        await axiosInstance.put(urls.project.project(project.id), project);
+        const response = await axiosInstance.put(
+          urls.project.project(project.id),
+          project,
+        );
 
-        projectStore.updateProject(project);
+        projectStore.updateProject(response.data.data);
         isUpdatingProject.value = false;
       } catch (error: any) {
         isUpdatingProject.value = false;

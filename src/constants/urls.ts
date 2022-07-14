@@ -16,6 +16,7 @@ const urls = {
   },
   task: {
     tasks: `${API_URL}tasks`,
+    task: (id: number): string => `${API_URL}tasks/${String(id)}`,
   },
 };
 

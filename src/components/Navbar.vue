@@ -15,8 +15,8 @@ const path = computed(() => route.path);
 const { useLogout } = useAuth();
 const { logout } = useLogout();
 
-const handleLogout = () => {
-  logout();
+const handleLogout = async () => {
+  await logout();
   router.push("/login");
 };
 </script>
@@ -76,9 +76,9 @@ const handleLogout = () => {
               <li><a class="dropdown-item" href="#">Another action</a></li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" href="#" @click.prevent="handleLogout"
-                  >Logout</a
-                >
+                <button class="dropdown-item" h @click="handleLogout">
+                  Logout
+                </button>
               </li>
             </ul>
           </div>
