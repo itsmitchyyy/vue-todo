@@ -1,5 +1,5 @@
 import { useAuth } from "@/composables/auth";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/stores/auth/auth";
 import axios, { type AxiosRequestConfig } from "axios";
 
 axios.interceptors.request.use(
@@ -19,11 +19,11 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     const { useLogout } = useAuth();
     const { logout } = useLogout();
     if (error.response.status === 403 || error.response.status === 401) {
-      logout();
+      await logout();
       window.location.href = "/login";
     }
 
