@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { useProject } from "@/composables/projects";
 import type { AddTask } from "@/domain/task";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, watch } from "vue";
+
+const props = defineProps<{
+  isLoading?: boolean;
+  task?: AddTask;
+}>();
 const emits = defineEmits<{
   (e: "onSubmitTask", value: AddTask): void;
 }>();
-defineProps<{ isLoading?: boolean }>();
 
 const formValues = reactive<AddTask>({
   title: "",
@@ -13,12 +17,20 @@ const formValues = reactive<AddTask>({
   projectId: 0,
 });
 
+const unwatch = watch(
+  () => props.task,
+  () => {
+    Object.assign(formValues, props.task);
+  },
+);
+
 const { useFetchProjects, projectStore } = useProject();
-const { fetchProjects } = useFetchProjects();
+const { fetchProjects, isFetchingProjects } = useFetchProjects();
 
 onMounted(fetchProjects);
 
 const handleSubmitTask = () => {
+  unwatch();
   emits("onSubmitTask", formValues);
 };
 </script>
@@ -32,6 +44,7 @@ const handleSubmitTask = () => {
       id="taskName"
       placeholder="Task Name"
       v-model="formValues.title"
+      :disabled="isLoading"
     />
   </div>
   <div class="mb-3">
@@ -41,6 +54,7 @@ const handleSubmitTask = () => {
       class="form-control"
       id="taskDescription"
       rows="3"
+      :disabled="isLoading"
     ></textarea>
   </div>
   <div class="mb-3">
@@ -49,8 +63,11 @@ const handleSubmitTask = () => {
       v-model="formValues.projectId"
       class="form-select"
       aria-label="Default select example"
+      :disabled="isFetchingProjects || isLoading"
     >
-      <option selected disabled value="0">Project</option>
+      <option selected disabled :value="0">
+        {{ isFetchingProjects ? "Loading..." : "Project" }}
+      </option>
       <option
         :value="project.id"
         v-for="project in projectStore.projects"
@@ -64,7 +81,7 @@ const handleSubmitTask = () => {
     <button
       class="btn btn-primary w-100"
       @click="handleSubmitTask"
-      :disabled="isLoading"
+      :disabled="isFetchingProjects || isLoading"
     >
       Submit
     </button>

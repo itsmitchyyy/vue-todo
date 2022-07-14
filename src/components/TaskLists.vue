@@ -2,7 +2,14 @@
 import type { Task } from "@/domain/task";
 import moment from "moment";
 
-defineProps<{ tasks: Task[]; isLoading?: boolean }>();
+defineProps<{ tasks: Task[]; isLoading?: boolean; isDeleting?: boolean }>();
+const emits = defineEmits<{
+  (e: "onDeleteTask", id: number): void;
+}>();
+
+const handleDeleteTask = (id: number) => {
+  emits("onDeleteTask", id);
+};
 </script>
 
 <template>
@@ -28,8 +35,22 @@ defineProps<{ tasks: Task[]; isLoading?: boolean }>();
           <p class="mb-1">Task Description: {{ task.description }}</p>
           <small>Project: {{ task.project.title }}</small>
           <div class="mt-1 d-grid gap-2 d-md-block">
-            <button class="btn btn-primary me-2">Edit</button>
-            <button class="btn btn-danger">Delete</button>
+            <button
+              class="btn btn-primary me-2"
+              @click="
+                $router.push({ name: 'edit-tasks', params: { id: task.id } })
+              "
+              :disabled="isDeleting"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-danger"
+              :disabled="isDeleting"
+              @click="handleDeleteTask(task.id)"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
