@@ -1,8 +1,8 @@
-import type { UserDetails } from "@/domain/user";
 import { ref } from "vue";
 import urls from "@/constants/urls";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/stores/auth/auth";
 import axiosInstance from "@/utils/axiosInstance";
+import type { AuthStoreType } from "@/stores/auth/types";
 
 type SignUp = {
   email: string;
@@ -11,12 +11,7 @@ type SignUp = {
 };
 
 export const useAuth = () => {
-  const authStore = useAuthStore();
-
-  const user = ref<UserDetails>({
-    token: "",
-    user: { id: 0, name: "", email: "" },
-  });
+  const authStore: AuthStoreType = useAuthStore();
 
   const useSignIn = () => {
     const isSigningIn = ref<boolean>(false);
@@ -34,7 +29,6 @@ export const useAuth = () => {
         });
 
         authStore.setCurrentUser(response.data.data);
-        user.value = response.data.data;
         isSigningIn.value = false;
       } catch (error: any) {
         if (error?.response?.status === 422) {
@@ -70,7 +64,6 @@ export const useAuth = () => {
         });
 
         authStore.setCurrentUser(response.data.data);
-        user.value = response.data.data;
         isSigningUp.value = false;
       } catch (error: any) {
         if (error?.response?.status === 422) {
@@ -101,5 +94,5 @@ export const useAuth = () => {
     return { logout };
   };
 
-  return { user, useSignIn, useSignUp, useLogout };
+  return { useSignIn, useSignUp, useLogout, authStore };
 };
