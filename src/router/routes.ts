@@ -57,6 +57,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/tasks/:id/edit",
+    name: "edit-tasks",
+    component: () => import("@/views/EditTaskView.vue"),
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
     path: "/:patchMatch(.*)*",
     component: () => import("@/views/NotFoundView.vue"),
   },
