@@ -11,7 +11,7 @@ import { useAuth } from "@/composables/auth";
 
 const route = useRoute();
 const router = useRouter();
-const path = computed(() => route.path);
+const path = computed(() => route?.path);
 const { useLogout, user } = useAuth();
 const { logout } = useLogout();
 
@@ -41,7 +41,7 @@ const handleLogout = async () => {
           <li class="nav-item">
             <a
               class="nav-link"
-              :class="{ active: path.includes('tasks') }"
+              :class="{ active: path?.includes('tasks') }"
               aria-current="page"
               href="/tasks"
               >Tasks</a
@@ -50,7 +50,7 @@ const handleLogout = async () => {
           <li class="nav-item">
             <a
               class="nav-link"
-              :class="{ active: path.includes('projects') }"
+              :class="{ active: path?.includes('projects') }"
               href="/projects"
               >Projects</a
             >

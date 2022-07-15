@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import TasksForm from "@/components/organisms/TasksForm/TasksForm.vue";
 import { useTask } from "@/composables/tasks";
 import type { AddTask } from "@/domain/task";
