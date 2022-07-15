@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import ProjectForm from "@/components/organisms/ProjectForm/ProjectForm.vue";
 import type { AddProject } from "@/domain/project";
 import { useProject } from "@/composables/projects";

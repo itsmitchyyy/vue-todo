@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import { useRouter } from "vue-router";
 import ProjectLists from "../components/ProjectLists.vue";
 import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
