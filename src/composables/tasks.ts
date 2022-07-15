@@ -6,8 +6,10 @@ import type { AddTask } from "@/domain/task";
 import { storeToRefs } from "pinia";
 
 export const useTask = () => {
-  const authStore = useTaskStore();
-  const { tasks, task } = storeToRefs(authStore);
+  const taskStore = useTaskStore();
+  const { tasks, task } = storeToRefs(taskStore);
+  const errors = ref<any>();
+  const isSuccess = ref<boolean>(false);
 
   const useFetchTasks = () => {
     const isFetchingTasks = ref<boolean>(false);
@@ -17,9 +19,14 @@ export const useTask = () => {
 
         const response = await axiosInstance.get(urls.task.tasks);
 
-        authStore.setTasks(response.data.data);
+        taskStore.setTasks(response.data.data);
+        isSuccess.value = true;
         isFetchingTasks.value = false;
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isFetchingTasks.value = false;
       }
     };
@@ -29,9 +36,14 @@ export const useTask = () => {
         isFetchingTasks.value = true;
         const response = await axiosInstance.get(urls.task.task(id));
 
-        authStore.setTask(response.data.data);
+        taskStore.setTask(response.data.data);
+        isSuccess.value = true;
         isFetchingTasks.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isFetchingTasks.value = false;
       }
     };
@@ -50,9 +62,14 @@ export const useTask = () => {
           project_id: projectId,
         });
 
-        authStore.addTask(response.data.data);
+        taskStore.addTask(response.data.data);
+        isSuccess.value = true;
         isAddingTask.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isAddingTask.value = false;
       }
     };
@@ -68,9 +85,14 @@ export const useTask = () => {
 
         await axiosInstance.delete(urls.task.task(id));
 
-        authStore.deleteTask(id);
+        taskStore.deleteTask(id);
+        isSuccess.value = true;
         isDeletingTask.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isDeletingTask.value = false;
       }
     };
@@ -90,9 +112,14 @@ export const useTask = () => {
           project_id: projectId,
         });
 
-        authStore.updateTask(response.data.data);
+        taskStore.updateTask(response.data.data);
+        isSuccess.value = true;
         isUpdatingTask.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isUpdatingTask.value = false;
       }
     };
@@ -105,6 +132,8 @@ export const useTask = () => {
     useAddTask,
     useDeleteTask,
     useUpdateTask,
+    isSuccess,
+    errors,
     tasks,
     task,
   };

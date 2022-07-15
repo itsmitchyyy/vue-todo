@@ -6,9 +6,14 @@ import { onMounted, reactive, watch } from "vue";
 const props = defineProps<{
   isLoading?: boolean;
   task?: AddTask;
+  errors?: { title: string; description?: string; project_id: string };
 }>();
 const emits = defineEmits<{
   (e: "onSubmitTask", value: AddTask): void;
+  (
+    e: "onTouchedInput",
+    touched: { title: boolean; description: boolean; project_id: boolean },
+  ): void;
 }>();
 
 const formValues = reactive<AddTask>({
@@ -24,7 +29,18 @@ const unwatch = watch(
   },
 );
 
-const { useFetchProjects, projectStore } = useProject();
+watch(
+  () => [formValues.title, formValues.description, formValues.projectId],
+  () => {
+    emits("onTouchedInput", {
+      title: !!formValues.title,
+      description: !!formValues.description,
+      project_id: !!formValues.projectId,
+    });
+  },
+);
+
+const { useFetchProjects, projects } = useProject();
 const { fetchProjects, isFetchingProjects } = useFetchProjects();
 
 onMounted(fetchProjects);
@@ -41,41 +57,49 @@ const handleSubmitTask = () => {
     <input
       type="text"
       class="form-control"
+      :class="{ 'is-invalid': !!errors?.title }"
       id="taskName"
       placeholder="Task Name"
       v-model="formValues.title"
       :disabled="isLoading"
     />
+    <div class="invalid-feedback" v-if="!!errors?.title">
+      {{ errors?.title[0] }}
+    </div>
   </div>
   <div class="mb-3">
     <label for="taskDescription" class="form-label">Task Description</label>
     <textarea
       v-model="formValues.description"
       class="form-control"
+      :class="{ 'is-invalid': !!errors?.description }"
       id="taskDescription"
       rows="3"
       :disabled="isLoading"
     ></textarea>
+    <div class="invalid-feedback" v-if="!!errors?.description">
+      {{ errors?.description[0] }}
+    </div>
   </div>
   <div class="mb-3">
     <label for="taskDescription" class="form-label">Project</label>
     <select
       v-model="formValues.projectId"
       class="form-select"
+      :class="{ 'is-invalid': !!errors?.project_id }"
       aria-label="Default select example"
       :disabled="isFetchingProjects || isLoading"
     >
       <option selected disabled :value="0">
         {{ isFetchingProjects ? "Loading..." : "Project" }}
       </option>
-      <option
-        :value="project.id"
-        v-for="project in projectStore.projects"
-        :key="project.id"
-      >
+      <option :value="project.id" v-for="project in projects" :key="project.id">
         {{ project.title }}
       </option>
     </select>
+    <div class="invalid-feedback" v-if="!!errors?.project_id">
+      {{ errors?.project_id[0] }}
+    </div>
   </div>
   <div>
     <button

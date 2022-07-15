@@ -2,17 +2,17 @@ import urls from "@/constants/urls";
 import type { AddProject, Project } from "@/domain/project";
 import { useProjectStore } from "@/stores/project";
 import axiosInstance from "@/utils/axiosInstance";
+import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 export const useProject = () => {
   const projectStore = useProjectStore();
+  const { project, projects } = storeToRefs(projectStore);
+  const errors = ref<any>();
+  const isSuccess = ref<boolean>(false);
 
   const useAddProject = () => {
     const isAddingProject = ref<boolean>(false);
-    const errors = ref<{ name: string; description?: string }>({
-      name: "",
-      description: "",
-    });
 
     const addProject = async (project: AddProject) => {
       try {
@@ -24,20 +24,18 @@ export const useProject = () => {
         });
 
         projectStore.addProject(response.data.data);
+        isSuccess.value = true;
         isAddingProject.value = false;
       } catch (error: any) {
         if (error?.response?.status === 422) {
-          setErrors(error.response.data.errors);
+          errors.value = error.response.data.errors;
         }
+        isSuccess.value = false;
         isAddingProject.value = false;
       }
     };
 
-    const setErrors = (errorValue: { name: string; description?: string }) => {
-      errors.value = errorValue;
-    };
-
-    return { addProject, setErrors, isAddingProject };
+    return { addProject, isAddingProject };
   };
 
   const useFetchProjects = () => {
@@ -50,8 +48,13 @@ export const useProject = () => {
         const response = await axiosInstance.get(urls.project.projects);
 
         projectStore.setProjects(response.data.data);
+        isSuccess.value = true;
         isFetchingProjects.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isFetchingProjects.value = false;
       }
     };
@@ -64,8 +67,13 @@ export const useProject = () => {
         );
 
         projectStore.setProject(response.data.data);
+        isSuccess.value = true;
         isFetchingProjects.value = false;
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isFetchingProjects.value = false;
       }
     };
@@ -83,8 +91,13 @@ export const useProject = () => {
         await axiosInstance.delete(urls.project.project(id));
 
         projectStore.deleteProject(id);
+        isSuccess.value = true;
         isDeletingProject.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isDeletingProject.value = false;
       }
     };
@@ -105,8 +118,13 @@ export const useProject = () => {
         );
 
         projectStore.updateProject(response.data.data);
+        isSuccess.value = true;
         isUpdatingProject.value = false;
       } catch (error: any) {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+        isSuccess.value = false;
         isUpdatingProject.value = false;
       }
     };
@@ -119,6 +137,9 @@ export const useProject = () => {
     useFetchProjects,
     useDeleteProject,
     useUpdateProject,
-    projectStore,
+    isSuccess,
+    project,
+    projects,
+    errors,
   };
 };
