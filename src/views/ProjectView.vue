@@ -8,7 +8,7 @@ import { onMounted } from "vue";
 
 const router = useRouter();
 
-const { useFetchProjects, useDeleteProject, projectStore } = useProject();
+const { useFetchProjects, useDeleteProject, projects } = useProject();
 const { fetchProjects, isFetchingProjects } = useFetchProjects();
 const { deleteProject, isDeletingProject } = useDeleteProject();
 
@@ -34,7 +34,7 @@ const handleDeleteProject = async (id: number) => {
         <ProjectLists
           :is-loading="isFetchingProjects"
           :is-deleting="isDeletingProject"
-          :projects="projectStore.projects"
+          :projects="projects"
           @on-delete-project="handleDeleteProject"
         />
       </div>

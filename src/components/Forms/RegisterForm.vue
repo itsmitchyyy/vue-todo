@@ -6,8 +6,10 @@ export type FormProps = {
   email: string;
   password: string;
 };
+
 const props = defineProps<{
   errors: { name?: string; email: string; password: string };
+  isLoading?: boolean;
 }>();
 const emits = defineEmits<{
   (e: "onSubmitRegister", values: FormProps): void;
@@ -85,6 +87,7 @@ const handleSubmitRegister = () => {
           </div>
         </div>
         <button
+          :disabled="isLoading"
           type="button"
           @click="handleSubmitRegister"
           class="btn btn-primary mb-3 w-100"
