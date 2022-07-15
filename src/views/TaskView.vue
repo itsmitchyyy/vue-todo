@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Navbar from "@/components/Navbar.vue";
-import IconPlus from "@/components/icons/IconPlus.vue";
+import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
 import TaskLists from "@/components/TaskLists.vue";
 import { useRouter } from "vue-router";
 import { useTask } from "@/composables/tasks";

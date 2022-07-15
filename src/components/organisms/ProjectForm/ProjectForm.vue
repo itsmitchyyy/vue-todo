@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import type { AddProject, Project } from "@/domain/project";
+import type { AddProject } from "@/domain/project";
 import { reactive, watch } from "vue";
+import type { FormProps, TouchedInputProps } from "./types";
 
 const props = defineProps<{
-  isLoading?: boolean;
-  project?: Project;
-  errors?: { title: string; description?: string };
+  isLoading?: FormProps["isLoading"];
+  project?: FormProps["project"];
+  errors?: FormProps["errors"];
 }>();
 
 const emits = defineEmits<{
   (e: "onSubmitProject", value: AddProject): void;
-  (
-    e: "onTouchedInput",
-    touched: { title: boolean; description: boolean },
-  ): void;
+  (e: "onTouchedInput", touched: TouchedInputProps): void;
 }>();
 
 const formValues = reactive<AddProject>({

@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { reactive, watch } from "vue";
+import type { RegisterFormProps, FormProps, TouchedInputProps } from "./types";
 
-export type FormProps = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-const props = defineProps<{
-  errors: { name?: string; email: string; password: string };
-  isLoading?: boolean;
+defineProps<{
+  errors: FormProps["errors"];
+  isLoading?: FormProps["isLoading"];
 }>();
 const emits = defineEmits<{
-  (e: "onSubmitRegister", values: FormProps): void;
-  (
-    e: "onChangeInput",
-    touched: { email: boolean; name: boolean; password: boolean },
-  ): void;
+  (e: "onSubmitRegister", values: RegisterFormProps): void;
+  (e: "onChangeInput", touched: TouchedInputProps): void;
 }>();
 const formValues = reactive({ name: "", email: "", password: "" });
-const computedErrors = computed(() => props.errors);
 
 watch(
   () => [formValues.email, formValues.name, formValues.password],
@@ -48,10 +39,10 @@ const handleSubmitRegister = () => {
               type="text"
               v-model="formValues.name"
               class="form-control"
-              :class="{ 'is-invalid': !!computedErrors.name }"
+              :class="{ 'is-invalid': !!errors?.name }"
             />
-            <div class="invalid-feedback" v-if="!!computedErrors.name">
-              {{ computedErrors.name[0] }}
+            <div class="invalid-feedback" v-if="!!errors?.name">
+              {{ errors?.name[0] }}
             </div>
           </div>
         </div>
@@ -62,10 +53,10 @@ const handleSubmitRegister = () => {
               type="text"
               v-model="formValues.email"
               class="form-control"
-              :class="{ 'is-invalid': !!computedErrors.email }"
+              :class="{ 'is-invalid': !!errors?.email }"
             />
-            <div class="invalid-feedback" v-if="!!computedErrors.email">
-              {{ computedErrors.email[0] }}
+            <div class="invalid-feedback" v-if="!!errors?.email">
+              {{ errors?.email[0] }}
             </div>
           </div>
         </div>
@@ -78,11 +69,11 @@ const handleSubmitRegister = () => {
               type="password"
               v-model="formValues.password"
               class="form-control"
-              :class="{ 'is-invalid': !!computedErrors.password }"
+              :class="{ 'is-invalid': !!errors?.password }"
               id="inputPassword"
             />
-            <div class="invalid-feedback" v-if="!!computedErrors.password">
-              {{ computedErrors.password[0] }}
+            <div class="invalid-feedback" v-if="!!errors?.password">
+              {{ errors?.password[0] }}
             </div>
           </div>
         </div>

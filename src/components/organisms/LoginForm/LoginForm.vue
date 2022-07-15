@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { reactive, watch } from "vue";
+import type { FormProps, LoginFormProps, TouchedInputProps } from "./types";
 
-export type LoginFormProps = {
-  email: string;
-  password: string;
-};
-
-const props = defineProps<{ errors: LoginFormProps; isLoading?: boolean }>();
+defineProps<{ errors?: LoginFormProps; isLoading?: FormProps["isLoading"] }>();
 const emits = defineEmits<{
   (e: "onSubmitLogin", values: LoginFormProps): void;
-  (e: "onChangeInput", touched: { email: boolean; password: boolean }): void;
+  (e: "onChangeInput", touched: TouchedInputProps): void;
 }>();
 const formValues = reactive({ email: "", password: "" });
-const computedErrors = computed(() => props.errors);
 
 watch(
   () => [formValues.email, formValues.password],
@@ -40,10 +35,10 @@ const handleSubmitLogin = () => {
               type="text"
               v-model="formValues.email"
               class="form-control"
-              :class="{ 'is-invalid': !!computedErrors.email }"
+              :class="{ 'is-invalid': !!errors?.email }"
             />
-            <div class="invalid-feedback" v-if="!!computedErrors.email">
-              {{ computedErrors.email[0] }}
+            <div class="invalid-feedback" v-if="!!errors?.email">
+              {{ errors?.email[0] }}
             </div>
           </div>
         </div>
@@ -56,11 +51,11 @@ const handleSubmitLogin = () => {
               type="password"
               class="form-control"
               v-model="formValues.password"
-              :class="{ 'is-invalid': !!computedErrors.password }"
+              :class="{ 'is-invalid': !!errors?.password }"
               id="inputPassword"
             />
-            <div class="invalid-feedback" v-if="!!computedErrors.password">
-              {{ computedErrors.password[0] }}
+            <div class="invalid-feedback" v-if="!!errors?.password">
+              {{ errors?.password[0] }}
             </div>
           </div>
         </div>

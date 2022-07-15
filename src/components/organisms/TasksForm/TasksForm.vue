@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { useProject } from "@/composables/projects";
-import type { AddTask } from "@/domain/task";
 import { onMounted, reactive, watch } from "vue";
+import type { AddTask } from "@/domain/task";
+
+import type { FormProps, TouchedInputProps } from "./types";
 
 const props = defineProps<{
-  isLoading?: boolean;
+  isLoading?: FormProps["isLoading"];
   task?: AddTask;
-  errors?: { title: string; description?: string; project_id: string };
+  errors?: FormProps["errors"];
 }>();
 const emits = defineEmits<{
   (e: "onSubmitTask", value: AddTask): void;
-  (
-    e: "onTouchedInput",
-    touched: { title: boolean; description: boolean; project_id: boolean },
-  ): void;
+  (e: "onTouchedInput", touched: TouchedInputProps): void;
 }>();
 
 const formValues = reactive<AddTask>({
@@ -94,7 +93,7 @@ const handleSubmitTask = () => {
         {{ isFetchingProjects ? "Loading..." : "Project" }}
       </option>
       <option :value="project.id" v-for="project in projects" :key="project.id">
-        {{ project.title }}
+        {{ project?.title }}
       </option>
     </select>
     <div class="invalid-feedback" v-if="!!errors?.project_id">
