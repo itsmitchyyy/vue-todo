@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import RegisterForm from "@/components/Forms/RegisterForm.vue";
-import type { FormProps } from "@/components/Forms/RegisterForm.vue";
+import RegisterForm from "@/components/organisms/RegisterForm/RegisterForm.vue";
+import type { RegisterFormProps } from "@/components/organisms/RegisterForm/types";
 import { useAuth } from "@/composables/auth";
 import { useRouter } from "vue-router";
 const { useSignUp, errors, user } = useAuth();
@@ -14,13 +14,13 @@ const handleChangeInput = (touched: {
   password: boolean;
 }) => {
   errors.value = {
-    email: touched.email ? "" : errors.value.email,
-    name: touched.name ? "" : errors.value.name,
-    password: touched.password ? "" : errors.value.password,
+    email: touched.email ? "" : errors.value?.email,
+    name: touched.name ? "" : errors.value?.name,
+    password: touched.password ? "" : errors.value?.password,
   };
 };
 
-const handleSubmitRegister = async (value: FormProps) => {
+const handleSubmitRegister = async (value: RegisterFormProps) => {
   await signUp(value);
 
   if (user.value?.token && user.value.user) {

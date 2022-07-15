@@ -2,7 +2,7 @@
 import Navbar from "@/components/Navbar.vue";
 import { useRouter } from "vue-router";
 import ProjectLists from "../components/ProjectLists.vue";
-import IconPlus from "../components/icons/IconPlus.vue";
+import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
 import { useProject } from "@/composables/projects";
 import { onMounted } from "vue";
 

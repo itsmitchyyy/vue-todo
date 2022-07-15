@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import LoginForm, {
-  type LoginFormProps,
-} from "@/components/Forms/LoginForm.vue";
+import LoginForm from "@/components/organisms/LoginForm/LoginForm.vue";
+import type { LoginFormProps } from "@/components/organisms/LoginForm/types";
 import { useAuth } from "@/composables/auth";
 import { useRouter } from "vue-router";
 
@@ -11,8 +10,8 @@ const router = useRouter();
 
 const handleChangeInput = (touched: { email: boolean; password: boolean }) => {
   errors.value = {
-    email: touched.email ? "" : errors.value.email,
-    password: touched.password ? "" : errors.value.password,
+    email: touched.email ? "" : errors.value?.email,
+    password: touched.password ? "" : errors.value?.password,
   };
 };
 

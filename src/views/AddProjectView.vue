@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Navbar from "@/components/Navbar.vue";
-import ProjectForm from "@/components/Forms/ProjectForm.vue";
+import ProjectForm from "@/components/organisms/ProjectForm/ProjectForm.vue";
 import type { AddProject } from "@/domain/project";
 import { useProject } from "@/composables/projects";
 import { useRouter } from "vue-router";
