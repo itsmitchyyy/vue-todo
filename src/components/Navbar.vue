@@ -12,7 +12,7 @@ import { useAuth } from "@/composables/auth";
 const route = useRoute();
 const router = useRouter();
 const path = computed(() => route.path);
-const { useLogout } = useAuth();
+const { useLogout, user } = useAuth();
 const { logout } = useLogout();
 
 const handleLogout = async () => {
@@ -66,7 +66,7 @@ const handleLogout = async () => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Dropdown
+              {{ user?.user.name }}
             </a>
             <ul
               class="dropdown-menu dropdown-menu-md-start dropdown-menu-lg-end"
