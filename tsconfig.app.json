@@ -1,7 +1,31 @@
+/** Storybook issue fix
+  https://github.com/johnsoncodehk/volar/discussions/592#discussioncomment-1490259
+*/
+
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/**/__tests__/*",
+    ".storybook/**/*.js",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.jsx",
+    ".storybook/**/*.tsx",
+    "src/**/stories.ts",
+    "src/**/stories.tsx",
+    "src/**/stories.js",
+    "src/**/stories.jsx",
+    "stories/**/*.js",
+    "stories/**/*.ts",
+    "stories/**/*.jsx",
+    "stories/**/*.tsx"
+  ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
