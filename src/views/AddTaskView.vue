@@ -6,13 +6,27 @@ import type { AddTask } from "@/domain/task";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const { useAddTask } = useTask();
+const { useAddTask, errors, isSuccess } = useTask();
 const { addTask, isAddingTask } = useAddTask();
+
+const handleTouchedInput = (touched: {
+  title: boolean;
+  description: boolean;
+  project_id: boolean;
+}) => {
+  errors.value = {
+    title: touched.title ? "" : errors.value?.title,
+    description: touched.description ? "" : errors.value?.description,
+    project_id: touched.project_id ? "" : errors.value?.project_id,
+  };
+};
 
 const handleAddTask = async (task: AddTask) => {
   await addTask(task);
 
-  router.push("/tasks");
+  if (isSuccess.value) {
+    router.push("/tasks");
+  }
 };
 </script>
 
@@ -21,7 +35,12 @@ const handleAddTask = async (task: AddTask) => {
   <div class="container mx-auto mt-5">
     <div class="tasks--container">
       <div class="tasks-form">
-        <TasksForm :is-loading="isAddingTask" @on-submit-task="handleAddTask" />
+        <TasksForm
+          :errors="errors"
+          :is-loading="isAddingTask"
+          @on-submit-task="handleAddTask"
+          @on-touched-input="handleTouchedInput"
+        />
       </div>
     </div>
   </div>
