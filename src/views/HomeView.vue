@@ -5,23 +5,22 @@ import LoginForm, {
 import { useAuth } from "@/composables/auth";
 import { useRouter } from "vue-router";
 
-const { useSignIn, authStore } = useAuth();
-const { signIn, isSigningIn, errors, setErrors } = useSignIn();
+const { useSignIn, user, errors } = useAuth();
+const { signIn, isSigningIn } = useSignIn();
 const router = useRouter();
 
 const handleChangeInput = (touched: { email: boolean; password: boolean }) => {
-  const errorValue = {
+  errors.value = {
     email: touched.email ? "" : errors.value.email,
     password: touched.password ? "" : errors.value.password,
   };
-  setErrors(errorValue);
 };
 
 const handleSubmitLogin = async (value: LoginFormProps) => {
   const { email, password } = value;
   await signIn(email, password);
 
-  if (authStore?.getUser && authStore.getToken) {
+  if (user.value?.token && user.value.user) {
     router.push("/tasks");
   }
 };

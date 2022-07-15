@@ -18,6 +18,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "no-extra-boolean-cast": "off",
   },
   overrides: [
     {

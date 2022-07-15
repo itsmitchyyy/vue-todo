@@ -9,16 +9,30 @@ import { onMounted } from "vue";
 const props = defineProps<{ id: string }>();
 
 const router = useRouter();
-const { useUpdateTask, useFetchTasks, task } = useTask();
+const { useUpdateTask, useFetchTasks, task, errors, isSuccess } = useTask();
 const { updateTask, isUpdatingTask } = useUpdateTask();
 const { fetchTask, isFetchingTasks } = useFetchTasks();
 
 onMounted(fetchTask(Number(props.id)) as any);
 
+const handleTouchedInput = (touched: {
+  title: boolean;
+  description: boolean;
+  project_id: boolean;
+}) => {
+  errors.value = {
+    title: touched.title ? "" : errors.value?.title,
+    description: touched.description ? "" : errors.value?.description,
+    project_id: touched.project_id ? "" : errors.value?.project_id,
+  };
+};
+
 const handleUpdateTask = async (task: AddTask) => {
   await updateTask({ ...task, id: Number(props.id) });
 
-  router.push("/tasks");
+  if (isSuccess.value) {
+    router.push("/tasks");
+  }
 };
 </script>
 
@@ -28,9 +42,11 @@ const handleUpdateTask = async (task: AddTask) => {
     <div class="tasks--container">
       <div class="tasks-form">
         <TasksForm
+          :errors="errors"
           :task="{ ...task, projectId: task.project?.id }"
           :is-loading="isUpdatingTask || isFetchingTasks"
           @on-submit-task="handleUpdateTask"
+          @on-touched-input="handleTouchedInput"
         />
       </div>
     </div>

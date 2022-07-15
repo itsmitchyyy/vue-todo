@@ -6,13 +6,25 @@ import { useProject } from "@/composables/projects";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const { useAddProject } = useProject();
+const { useAddProject, errors, isSuccess } = useProject();
 const { addProject, isAddingProject } = useAddProject();
+
+const handleTouchedInput = (touched: {
+  title: boolean;
+  description: boolean;
+}) => {
+  errors.value = {
+    title: touched.title ? "" : errors.value?.title,
+    description: touched.description ? "" : errors.value?.description,
+  };
+};
 
 const handleSubmitProject = async (value: AddProject) => {
   await addProject(value);
 
-  router.push("/projects");
+  if (isSuccess.value) {
+    router.push("/projects");
+  }
 };
 </script>
 
@@ -22,8 +34,10 @@ const handleSubmitProject = async (value: AddProject) => {
     <div class="projects--container">
       <div class="projects-form">
         <ProjectForm
+          :errors="errors"
           :is-loading="isAddingProject"
           @on-submit-project="handleSubmitProject"
+          @on-touched-input="handleTouchedInput"
         />
       </div>
     </div>

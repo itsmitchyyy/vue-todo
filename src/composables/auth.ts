@@ -3,6 +3,7 @@ import urls from "@/constants/urls";
 import { useAuthStore } from "@/stores/auth/auth";
 import axiosInstance from "@/utils/axiosInstance";
 import type { AuthStoreType } from "@/stores/auth/types";
+import { storeToRefs } from "pinia";
 
 type SignUp = {
   email: string;
@@ -12,13 +13,11 @@ type SignUp = {
 
 export const useAuth = () => {
   const authStore: AuthStoreType = useAuthStore();
+  const { user } = storeToRefs(authStore);
+  const errors = ref<any>();
 
   const useSignIn = () => {
     const isSigningIn = ref<boolean>(false);
-    const errors = ref<{ email: string; password: string }>({
-      email: "",
-      password: "",
-    });
 
     const signIn = async (email: string, password: string) => {
       try {
@@ -32,26 +31,17 @@ export const useAuth = () => {
         isSigningIn.value = false;
       } catch (error: any) {
         if (error?.response?.status === 422) {
-          setErrors(error.response.data.errors);
+          errors.value = error.response.data.errors;
         }
         isSigningIn.value = false;
       }
     };
 
-    const setErrors = (errorValue: { email: string; password: string }) => {
-      errors.value = errorValue;
-    };
-
-    return { signIn, isSigningIn, setErrors, errors };
+    return { signIn, isSigningIn };
   };
 
   const useSignUp = () => {
     const isSigningUp = ref<boolean>(false);
-    const errors = ref<{ name: string; email: string; password: string }>({
-      name: "",
-      email: "",
-      password: "",
-    });
 
     const signUp = async (values: SignUp) => {
       try {
@@ -67,21 +57,13 @@ export const useAuth = () => {
         isSigningUp.value = false;
       } catch (error: any) {
         if (error?.response?.status === 422) {
-          setErrors(error.response.data.errors);
+          errors.value = error.response.data.errors;
         }
         isSigningUp.value = false;
       }
     };
 
-    const setErrors = (errorValue: {
-      name: string;
-      email: string;
-      password: string;
-    }) => {
-      errors.value = errorValue;
-    };
-
-    return { signUp, isSigningUp, setErrors, errors };
+    return { signUp, isSigningUp };
   };
 
   const useLogout = () => {
@@ -94,5 +76,5 @@ export const useAuth = () => {
     return { logout };
   };
 
-  return { useSignIn, useSignUp, useLogout, authStore };
+  return { useSignIn, useSignUp, useLogout, user, errors };
 };

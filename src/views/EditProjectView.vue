@@ -9,17 +9,30 @@ import { onMounted } from "vue";
 const props = defineProps<{ id: string }>();
 
 const router = useRouter();
-const { useFetchProjects, useUpdateProject, projectStore } = useProject();
+const { useFetchProjects, useUpdateProject, project, errors, isSuccess } =
+  useProject();
 const { fetchProject, isFetchingProjects } = useFetchProjects();
 const { updateProject, isUpdatingProject } = useUpdateProject();
 
 onMounted(fetchProject(String(props.id)) as any);
 
+const handleTouchedInput = (touched: {
+  title: boolean;
+  description: boolean;
+}) => {
+  errors.value = {
+    title: touched.title ? "" : errors.value?.title,
+    description: touched.description ? "" : errors.value?.description,
+  };
+};
+
 const handleSubmitProject = async (value: AddProject) => {
   const params = { id: Number(props.id), ...value };
   await updateProject(params);
 
-  router.push("/projects");
+  if (isSuccess.value) {
+    router.push("/projects");
+  }
 };
 </script>
 
@@ -29,9 +42,11 @@ const handleSubmitProject = async (value: AddProject) => {
     <div class="projects--container">
       <div class="projects-form">
         <ProjectForm
+          :errors="errors"
           :is-loading="isFetchingProjects || isUpdatingProject"
-          :project="projectStore.project"
+          :project="project"
           @on-submit-project="handleSubmitProject"
+          @on-touched-input="handleTouchedInput"
         />
       </div>
     </div>
