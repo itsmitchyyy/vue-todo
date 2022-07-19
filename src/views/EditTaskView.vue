@@ -1,19 +1,39 @@
 <script setup lang="ts">
 import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import TasksForm from "@/components/organisms/TasksForm/TasksForm.vue";
-import { useTask } from "@/composables/tasks";
 import type { AddTask } from "@/domain/task";
 import { useRouter } from "vue-router";
-import { onMounted } from "vue";
+import { useFetchTasks, useUpdateTask } from "@/composables";
+import { useMutation, useQuery } from "vue-query";
+import { ref } from "vue";
 
 const props = defineProps<{ id: string }>();
 
+const errors = ref<any>();
 const router = useRouter();
-const { useUpdateTask, useFetchTasks, task, errors, isSuccess } = useTask();
-const { updateTask, isUpdatingTask } = useUpdateTask();
-const { fetchTask, isFetchingTasks } = useFetchTasks();
+const { fetchTask } = useFetchTasks();
+const { updateTask } = useUpdateTask();
 
-onMounted(fetchTask(Number(props.id)) as any);
+const { data: task, isFetching: isFetchingTasks } = useQuery(
+  ["task", props.id],
+  () => {
+    return fetchTask(Number(props.id));
+  },
+);
+
+const { mutate: updateTaskMutation, isLoading: isUpdatingTask } = useMutation(
+  (task: AddTask & { id: number }) => {
+    return updateTask(task);
+  },
+  {
+    onSuccess: () => router.push("/tasks"),
+    onError: (error: any) => {
+      if (error?.response?.status === 422) {
+        errors.value = error.response.data.errors;
+      }
+    },
+  },
+);
 
 const handleTouchedInput = (touched: {
   title: boolean;
@@ -28,11 +48,7 @@ const handleTouchedInput = (touched: {
 };
 
 const handleUpdateTask = async (task: AddTask) => {
-  await updateTask({ ...task, id: Number(props.id) });
-
-  if (isSuccess.value) {
-    router.push("/tasks");
-  }
+  updateTaskMutation({ ...task, id: Number(props.id) });
 };
 </script>
 
@@ -43,7 +59,11 @@ const handleUpdateTask = async (task: AddTask) => {
       <div class="tasks-form">
         <TasksForm
           :errors="errors"
-          :task="{ ...task, projectId: task.project?.id }"
+          :task="
+            task
+              ? { ...task, projectId: task.project?.id }
+              : { title: '', description: '', projectId: 0 }
+          "
           :is-loading="isUpdatingTask || isFetchingTasks"
           @on-submit-task="handleUpdateTask"
           @on-touched-input="handleTouchedInput"

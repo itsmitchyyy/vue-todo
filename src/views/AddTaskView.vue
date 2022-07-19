@@ -1,13 +1,29 @@
 <script setup lang="ts">
 import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import TasksForm from "@/components/organisms/TasksForm/TasksForm.vue";
-import { useTask } from "@/composables/tasks";
+import { useAddTask } from "@/composables";
 import type { AddTask } from "@/domain/task";
+import { ref } from "vue";
+import { useMutation } from "vue-query";
 import { useRouter } from "vue-router";
 
+const errors = ref<any>();
 const router = useRouter();
-const { useAddTask, errors, isSuccess } = useTask();
-const { addTask, isAddingTask } = useAddTask();
+const { addTask } = useAddTask();
+
+const { mutate: addTaskMutation, isLoading: isAddingTask } = useMutation(
+  (payload: AddTask) => {
+    return addTask(payload);
+  },
+  {
+    onSuccess: () => router.push("/tasks"),
+    onError: (error: any) => {
+      if (error?.response?.status === 422) {
+        errors.value = error.response.data.errors;
+      }
+    },
+  },
+);
 
 const handleTouchedInput = (touched: {
   title: boolean;
@@ -22,11 +38,7 @@ const handleTouchedInput = (touched: {
 };
 
 const handleAddTask = async (task: AddTask) => {
-  await addTask(task);
-
-  if (isSuccess.value) {
-    router.push("/tasks");
-  }
+  addTaskMutation(task);
 };
 </script>
 
