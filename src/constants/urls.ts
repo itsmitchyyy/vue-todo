@@ -20,4 +20,6 @@ const urls = {
   },
 };
 
+export type URLsType = typeof urls;
+
 export default urls;

@@ -10,9 +10,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  if (to.meta.requiresAuth && !authStore.getToken) {
+  if (to.meta.requiresAuth && !authStore.user?.token) {
     next({ name: "login" });
-  } else if (!to.meta.requiresAuth && authStore.getToken) {
+  } else if (!to.meta.requiresAuth && authStore.user?.token) {
     next({ name: "tasks" });
   } else {
     next();

@@ -3,18 +3,34 @@ import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
 import TaskLists from "@/components/TaskLists.vue";
 import { useRouter } from "vue-router";
-import { useTask } from "@/composables/tasks";
-import { onMounted } from "vue";
+import { useFetchTasks, useDeleteTask } from "@/composables";
+import { useMutation, useQuery, useQueryClient } from "vue-query";
+
+const queryClient = useQueryClient();
 
 const router = useRouter();
-const { useFetchTasks, useDeleteTask, tasks } = useTask();
-const { fetchTasks, isFetchingTasks } = useFetchTasks();
-const { deleteTask, isDeletingTask } = useDeleteTask();
+const { fetchTasks } = useFetchTasks();
+const { deleteTask } = useDeleteTask();
 
-onMounted(fetchTasks);
+const { data: tasks, isFetching: isFetchingTasks } = useQuery(
+  "tasks",
+  fetchTasks,
+  {
+    refetchOnMount: true,
+  },
+);
+
+const { mutate: deleteTaskMutation, isLoading: isDeletingTask } = useMutation(
+  (id: number) => {
+    return deleteTask(id);
+  },
+  {
+    onSuccess: () => queryClient.refetchQueries("tasks"),
+  },
+);
 
 const handleDeleteTask = async (id: number) => {
-  await deleteTask(id);
+  deleteTaskMutation(id);
 };
 </script>
 
@@ -34,7 +50,7 @@ const handleDeleteTask = async (id: number) => {
           :is-loading="isFetchingTasks"
           :is-deleting="isDeletingTask"
           @on-delete-task="handleDeleteTask"
-          :tasks="tasks"
+          :tasks="tasks || []"
         />
       </div>
     </div>
