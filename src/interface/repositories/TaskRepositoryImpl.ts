@@ -34,8 +34,10 @@ export default class TaskRepositoryImpl implements TaskRepository {
     return response.data.data;
   };
 
-  fetchTasks = async (): Promise<Task[]> => {
-    const response = await this.httpAdapter.get(this.urls.tasks, {});
+  fetchTasks = async (search?: string): Promise<Task[]> => {
+    const response = await this.httpAdapter.get(this.urls.tasks, {
+      params: { search },
+    });
 
     return response.data.data;
   };

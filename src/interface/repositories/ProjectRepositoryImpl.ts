@@ -33,8 +33,12 @@ export default class ProjectRepositoryImpl implements ProjectRepository {
     return response.data.data;
   };
 
-  fetchProjects = async (): Promise<Project[]> => {
-    const response = await this.httpAdapter.get(this.urls.projects, {});
+  fetchProjects = async (search?: string): Promise<Project[]> => {
+    const response = await this.httpAdapter.get(this.urls.projects, {
+      params: {
+        search,
+      },
+    });
 
     return response.data.data;
   };

@@ -1,7 +1,7 @@
 import type { AddTask, Task } from "@/domain/task";
 
 export default interface TaskRepository {
-  fetchTasks: () => Promise<Task[]>;
+  fetchTasks: (search?: string) => Promise<Task[]>;
   fetchTask: (id: number) => Promise<Task>;
   addTask: (task: AddTask) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;

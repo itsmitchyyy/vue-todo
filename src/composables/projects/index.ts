@@ -5,7 +5,7 @@ export type ProjectsHooks = {
     addProject: (Project: AddProject) => Promise<void>;
   };
   useFetchProjects: () => {
-    fetchProjects: () => Promise<Project[]>;
+    fetchProjects: (search?: string) => Promise<Project[]>;
     fetchProject: (id: number) => Promise<Project>;
   };
   useDeleteProject: () => {

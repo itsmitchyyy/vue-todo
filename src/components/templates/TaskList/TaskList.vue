@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { useDeleteTask, useFetchTasks } from "@/composables";
+import { useDebounce } from "@vueuse/core";
 import moment from "moment";
+import { ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "vue-query";
 
 const queryClient = useQueryClient();
+
+const search = ref();
+
+const debouncedSearch = useDebounce(search, 500);
 
 const { fetchTasks } = useFetchTasks();
 const { deleteTask } = useDeleteTask();
 
 const { data: tasks, isFetching: isFetchingTasks } = useQuery(
-  "tasks",
-  fetchTasks,
+  ["tasks", debouncedSearch],
+  () => {
+    return fetchTasks(debouncedSearch.value);
+  },
   {
     refetchOnMount: true,
   },
@@ -33,6 +41,13 @@ const handleDeleteTask = async (id: number) => {
 <template>
   <div class="d-flex flex-column w-100">
     <h5>Task List</h5>
+
+    <input
+      type="text"
+      class="form-control"
+      v-model="search"
+      placeholder="Search Tasks"
+    />
 
     <template v-if="isFetchingTasks">
       <div>Loading...</div>
