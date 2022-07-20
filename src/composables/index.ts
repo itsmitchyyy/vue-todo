@@ -5,4 +5,25 @@ import {
   useUpdateTask,
 } from "./tasks/composable";
 
-export { useAddTask, useDeleteTask, useFetchTasks, useUpdateTask };
+import {
+  useAddProject,
+  useDeleteProject,
+  useFetchProjects,
+  useUpdateProject,
+} from "./projects/composable";
+
+import { useSignIn, useSignUp, useSignOut } from "./auth/composables";
+
+export {
+  useAddTask,
+  useDeleteTask,
+  useFetchTasks,
+  useUpdateTask,
+  useAddProject,
+  useDeleteProject,
+  useFetchProjects,
+  useUpdateProject,
+  useSignIn,
+  useSignUp,
+  useSignOut,
+};

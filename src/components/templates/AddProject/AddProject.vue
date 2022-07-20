@@ -2,19 +2,28 @@
 import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import ProjectForm from "@/components/organisms/ProjectForm/ProjectForm.vue";
 import type { AddProject } from "@/domain/project";
-import { useProject } from "@/composables/projects";
 import { useRouter } from "vue-router";
-import { onMounted } from "vue";
-
-const props = defineProps<{ id: string }>();
-
+import { useAddProject } from "@/composables";
+import { useMutation } from "vue-query";
+import { ref } from "vue";
 const router = useRouter();
-const { useFetchProjects, useUpdateProject, project, errors, isSuccess } =
-  useProject();
-const { fetchProject, isFetchingProjects } = useFetchProjects();
-const { updateProject, isUpdatingProject } = useUpdateProject();
 
-onMounted(fetchProject(String(props.id)) as any);
+const errors = ref<any>();
+const { addProject } = useAddProject();
+
+const { mutate: addProjectMutation, isLoading: isAddingProject } = useMutation(
+  (payload: AddProject) => {
+    return addProject(payload);
+  },
+  {
+    onSuccess: () => router.push("/projects"),
+    onError: (error: any) => {
+      if (error?.response?.status === 422) {
+        errors.value = error.response.data.errors;
+      }
+    },
+  },
+);
 
 const handleTouchedInput = (touched: {
   title: boolean;
@@ -27,12 +36,7 @@ const handleTouchedInput = (touched: {
 };
 
 const handleSubmitProject = async (value: AddProject) => {
-  const params = { id: Number(props.id), ...value };
-  await updateProject(params);
-
-  if (isSuccess.value) {
-    router.push("/projects");
-  }
+  addProjectMutation(value);
 };
 </script>
 
@@ -43,8 +47,7 @@ const handleSubmitProject = async (value: AddProject) => {
       <div class="projects-form">
         <ProjectForm
           :errors="errors"
-          :is-loading="isFetchingProjects || isUpdatingProject"
-          :project="project"
+          :is-loading="isAddingProject"
           @on-submit-project="handleSubmitProject"
           @on-touched-input="handleTouchedInput"
         />

@@ -1,14 +1,32 @@
 <script setup lang="ts">
-import type { Task } from "@/domain/task";
+import { useDeleteTask, useFetchTasks } from "@/composables";
 import moment from "moment";
+import { useMutation, useQuery, useQueryClient } from "vue-query";
 
-defineProps<{ tasks: Task[]; isLoading?: boolean; isDeleting?: boolean }>();
-const emits = defineEmits<{
-  (e: "onDeleteTask", id: number): void;
-}>();
+const queryClient = useQueryClient();
 
-const handleDeleteTask = (id: number) => {
-  emits("onDeleteTask", id);
+const { fetchTasks } = useFetchTasks();
+const { deleteTask } = useDeleteTask();
+
+const { data: tasks, isFetching: isFetchingTasks } = useQuery(
+  "tasks",
+  fetchTasks,
+  {
+    refetchOnMount: true,
+  },
+);
+
+const { mutate: deleteTaskMutation, isLoading: isDeletingTask } = useMutation(
+  (id: number) => {
+    return deleteTask(id);
+  },
+  {
+    onSuccess: () => queryClient.refetchQueries("tasks"),
+  },
+);
+
+const handleDeleteTask = async (id: number) => {
+  deleteTaskMutation(id);
 };
 </script>
 
@@ -16,11 +34,11 @@ const handleDeleteTask = (id: number) => {
   <div class="d-flex flex-column w-100">
     <h5>Task List</h5>
 
-    <template v-if="isLoading">
+    <template v-if="isFetchingTasks">
       <div>Loading...</div>
     </template>
 
-    <template v-else-if="tasks.length">
+    <template v-else-if="tasks?.length">
       <div class="list-group mt-4">
         <div
           class="list-group-item list-group-item-action"
@@ -40,13 +58,13 @@ const handleDeleteTask = (id: number) => {
               @click="
                 $router.push({ name: 'edit-tasks', params: { id: task.id } })
               "
-              :disabled="isDeleting"
+              :disabled="isDeletingTask"
             >
               Edit
             </button>
             <button
               class="btn btn-danger"
-              :disabled="isDeleting"
+              :disabled="isDeletingTask"
               @click="handleDeleteTask(task.id)"
             >
               Delete
