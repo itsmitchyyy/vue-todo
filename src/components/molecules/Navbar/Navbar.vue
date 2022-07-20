@@ -6,18 +6,29 @@ export default {
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { computed } from "vue";
-import { useAuth } from "@/composables/auth";
+import { computed, toRefs } from "vue";
+import { useSignOut } from "@/composables";
+import { useMutation } from "vue-query";
+import { useAuthStore } from "@/stores/auth/auth";
 
 const route = useRoute();
 const router = useRouter();
 const path = computed(() => route?.path);
-const { useLogout, user } = useAuth();
-const { logout } = useLogout();
 
-const handleLogout = async () => {
-  await logout();
-  router.push("/login");
+const authStore = useAuthStore();
+const { user } = toRefs(authStore);
+const { setCurrentUser } = authStore;
+const { signOut } = useSignOut();
+
+const { mutate: signOutMutation } = useMutation(() => signOut(), {
+  onSuccess: () => {
+    setCurrentUser(undefined);
+    router.push("/login");
+  },
+});
+
+const handleLogout = () => {
+  signOutMutation();
 };
 </script>
 

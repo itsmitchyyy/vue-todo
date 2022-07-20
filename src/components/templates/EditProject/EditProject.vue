@@ -1,13 +1,43 @@
 <script setup lang="ts">
 import Navbar from "@/components/molecules/Navbar/Navbar.vue";
 import ProjectForm from "@/components/organisms/ProjectForm/ProjectForm.vue";
-import type { AddProject } from "@/domain/project";
-import { useProject } from "@/composables/projects";
+import { useFetchProjects, useUpdateProject } from "@/composables";
+import type { AddProject, Project } from "@/domain/project";
+import { ref } from "vue";
+import { useMutation, useQuery } from "vue-query";
 import { useRouter } from "vue-router";
-const router = useRouter();
 
-const { useAddProject, errors, isSuccess } = useProject();
-const { addProject, isAddingProject } = useAddProject();
+const props = defineProps<{ id: string }>();
+
+const router = useRouter();
+const errors = ref<any>();
+const { fetchProject } = useFetchProjects();
+const { updateProject } = useUpdateProject();
+
+const { data: project, isFetching: isFetchingProjects } = useQuery(
+  ["project", props.id],
+  () => {
+    return fetchProject(Number(props.id));
+  },
+  {
+    refetchOnMount: true,
+  },
+);
+
+const { mutate: updateProjectMutationn, isLoading: isUpdatingProject } =
+  useMutation(
+    (payload: Project) => {
+      return updateProject(payload);
+    },
+    {
+      onSuccess: () => router.push("/projects"),
+      onError: (error: any) => {
+        if (error?.response?.status === 422) {
+          errors.value = error.response.data.errors;
+        }
+      },
+    },
+  );
 
 const handleTouchedInput = (touched: {
   title: boolean;
@@ -20,11 +50,8 @@ const handleTouchedInput = (touched: {
 };
 
 const handleSubmitProject = async (value: AddProject) => {
-  await addProject(value);
-
-  if (isSuccess.value) {
-    router.push("/projects");
-  }
+  const params = { id: Number(props.id), ...value };
+  updateProjectMutationn(params);
 };
 </script>
 
@@ -35,7 +62,8 @@ const handleSubmitProject = async (value: AddProject) => {
       <div class="projects-form">
         <ProjectForm
           :errors="errors"
-          :is-loading="isAddingProject"
+          :is-loading="isFetchingProjects || isUpdatingProject"
+          :project="project"
           @on-submit-project="handleSubmitProject"
           @on-touched-input="handleTouchedInput"
         />

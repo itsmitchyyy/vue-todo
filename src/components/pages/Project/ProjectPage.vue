@@ -1,22 +1,7 @@
 <script setup lang="ts">
 import Navbar from "@/components/molecules/Navbar/Navbar.vue";
-import { useRouter } from "vue-router";
-import ProjectLists from "../components/ProjectLists.vue";
+import ProjectLists from "@/components/templates/ProjectList/ProjectList.vue";
 import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
-import { useProject } from "@/composables/projects";
-import { onMounted } from "vue";
-
-const router = useRouter();
-
-const { useFetchProjects, useDeleteProject, projects } = useProject();
-const { fetchProjects, isFetchingProjects } = useFetchProjects();
-const { deleteProject, isDeletingProject } = useDeleteProject();
-
-onMounted(fetchProjects);
-
-const handleDeleteProject = async (id: number) => {
-  await deleteProject(id);
-};
 </script>
 
 <template>
@@ -24,19 +9,14 @@ const handleDeleteProject = async (id: number) => {
   <div class="container mx-auto mt-5">
     <div>
       <button
-        @click="router.push('/projects/add-projects')"
+        @click="$router.push('/projects/add-projects')"
         class="btn btn-custom-style btn-outline-primary"
       >
         <span class="btn-label"><IconPlus /></span>Add Project
       </button>
 
       <div class="d-flex mt-5">
-        <ProjectLists
-          :is-loading="isFetchingProjects"
-          :is-deleting="isDeletingProject"
-          :projects="projects"
-          @on-delete-project="handleDeleteProject"
-        />
+        <ProjectLists />
       </div>
     </div>
   </div>

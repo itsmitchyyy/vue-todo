@@ -7,7 +7,9 @@ export const useAuthStore = defineStore({
   state: () => ({
     user: useStorage("user", {}) as RemovableRef<UserDetails | undefined>,
   }),
-  getters: {},
+  getters: {
+    token: (state) => state.user?.token,
+  },
   actions: {
     setCurrentUser(user: UserDetails | undefined) {
       this.user = user;

@@ -19,6 +19,9 @@ const { data: task, isFetching: isFetchingTasks } = useQuery(
   () => {
     return fetchTask(Number(props.id));
   },
+  {
+    refetchOnMount: true,
+  },
 );
 
 const { mutate: updateTaskMutation, isLoading: isUpdatingTask } = useMutation(
@@ -59,11 +62,7 @@ const handleUpdateTask = async (task: AddTask) => {
       <div class="tasks-form">
         <TasksForm
           :errors="errors"
-          :task="
-            task
-              ? { ...task, projectId: task.project?.id }
-              : { title: '', description: '', projectId: 0 }
-          "
+          :task="task"
           :is-loading="isUpdatingTask || isFetchingTasks"
           @on-submit-task="handleUpdateTask"
           @on-touched-input="handleTouchedInput"

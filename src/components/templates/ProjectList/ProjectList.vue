@@ -1,18 +1,29 @@
 <script setup lang="ts">
-import type { Project } from "@/domain/project";
+import { useDeleteProject, useFetchProjects } from "@/composables";
 import moment from "moment";
+import { useMutation, useQuery, useQueryClient } from "vue-query";
 
-defineProps<{
-  isLoading: boolean;
-  isDeleting?: boolean;
-  projects: Project[];
-}>();
-const emits = defineEmits<{
-  (e: "onDeleteProject", id: number): void;
-}>();
+const queryClient = useQueryClient();
+const { fetchProjects } = useFetchProjects();
+const { deleteProject } = useDeleteProject();
+
+const { data: projects, isFetching: isFetchingProjects } = useQuery(
+  "projects",
+  fetchProjects,
+  { refetchOnMount: true },
+);
+
+const { mutate: deleteTaskMutation, isLoading: isDeletingTask } = useMutation(
+  (id: number) => {
+    return deleteProject(id);
+  },
+  {
+    onSuccess: () => queryClient.refetchQueries("projects"),
+  },
+);
 
 const handleDeleteProject = (id: number) => {
-  emits("onDeleteProject", id);
+  deleteTaskMutation(id);
 };
 </script>
 
@@ -20,10 +31,10 @@ const handleDeleteProject = (id: number) => {
   <div class="d-flex flex-column w-100">
     <h5>Project List</h5>
 
-    <template v-if="isLoading">
+    <template v-if="isFetchingProjects">
       <div>Loading...</div>
     </template>
-    <template v-else-if="projects.length">
+    <template v-else-if="projects?.length">
       <div class="list-group mt-4">
         <div
           class="list-group-item list-group-item-action"
@@ -45,13 +56,13 @@ const handleDeleteProject = (id: number) => {
                   params: { id: project.id },
                 })
               "
-              :disabled="isDeleting"
+              :disabled="isDeletingTask"
             >
               Edit
             </button>
             <button
               class="btn btn-danger"
-              :disabled="isDeleting"
+              :disabled="isDeletingTask"
               @click="handleDeleteProject(project.id)"
             >
               Delete

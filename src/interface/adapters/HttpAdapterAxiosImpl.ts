@@ -34,6 +34,8 @@ export default class HttpAdapterAxiosImpl implements HttpAdapter {
     try {
       return this.axios.get(url, options);
     } catch (err) {
+      console.log("here");
+
       throw this.checkAuthError(err as AxiosError);
     }
   };

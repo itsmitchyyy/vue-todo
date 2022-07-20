@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useProject } from "@/composables/projects";
 import { onMounted, reactive, watch } from "vue";
-import type { AddTask } from "@/domain/task";
+import type { AddTask, Task } from "@/domain/task";
 
 import type { FormProps, TouchedInputProps } from "./types";
 
 const props = defineProps<{
   isLoading?: FormProps["isLoading"];
-  task?: AddTask;
+  task?: Task;
   errors?: FormProps["errors"];
 }>();
 const emits = defineEmits<{
@@ -15,7 +15,7 @@ const emits = defineEmits<{
   (e: "onTouchedInput", touched: TouchedInputProps): void;
 }>();
 
-const formValues = reactive<AddTask>({
+const formValues = reactive({
   title: "",
   description: "",
   projectId: 0,
@@ -24,7 +24,10 @@ const formValues = reactive<AddTask>({
 const unwatch = watch(
   () => props.task,
   () => {
-    Object.assign(formValues, props.task);
+    Object.assign(formValues, {
+      ...props.task,
+      projectId: props.task?.project.id,
+    });
   },
 );
 
