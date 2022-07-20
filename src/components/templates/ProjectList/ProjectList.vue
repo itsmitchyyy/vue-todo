@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { useDeleteProject, useFetchProjects } from "@/composables";
+import { useDebounce } from "@vueuse/core";
 import moment from "moment";
+import { ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "vue-query";
 
 const queryClient = useQueryClient();
 const { fetchProjects } = useFetchProjects();
 const { deleteProject } = useDeleteProject();
 
+const search = ref();
+
+const debouncedSearch = useDebounce(search, 500);
+
 const { data: projects, isFetching: isFetchingProjects } = useQuery(
-  "projects",
-  fetchProjects,
+  ["projects", debouncedSearch],
+  () => {
+    return fetchProjects(debouncedSearch.value);
+  },
   { refetchOnMount: true },
 );
 
@@ -30,6 +38,13 @@ const handleDeleteProject = (id: number) => {
 <template>
   <div class="d-flex flex-column w-100">
     <h5>Project List</h5>
+
+    <input
+      type="text"
+      class="form-control"
+      v-model="search"
+      placeholder="Search Projects"
+    />
 
     <template v-if="isFetchingProjects">
       <div>Loading...</div>

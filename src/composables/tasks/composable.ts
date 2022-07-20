@@ -16,8 +16,8 @@ export const useFetchTasks: TasksHooks["useFetchTasks"] = (): {
   fetchTasks: () => Promise<Task[]>;
   fetchTask: (id: number) => Promise<Task>;
 } => {
-  const fetchTasks = async () => {
-    return await taskInteractor.fetchTasks();
+  const fetchTasks = async (search?: string) => {
+    return await taskInteractor.fetchTasks(search);
   };
 
   const fetchTask = async (id: number) => {

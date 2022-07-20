@@ -5,7 +5,7 @@ export type TasksHooks = {
     addTask: (task: AddTask) => Promise<void>;
   };
   useFetchTasks: () => {
-    fetchTasks: () => Promise<Task[]>;
+    fetchTasks: (search?: string) => Promise<Task[]>;
     fetchTask: (id: number) => Promise<Task>;
   };
   useDeleteTask: () => {

@@ -13,11 +13,11 @@ export const useAddProject: ProjectsHooks["useAddProject"] = (): {
 };
 
 export const useFetchProjects: ProjectsHooks["useFetchProjects"] = (): {
-  fetchProjects: () => Promise<Project[]>;
+  fetchProjects: (search?: string) => Promise<Project[]>;
   fetchProject: (id: number) => Promise<Project>;
 } => {
-  const fetchProjects = async () => {
-    return await projectInteractor.fetchProjects();
+  const fetchProjects = async (search?: string) => {
+    return await projectInteractor.fetchProjects(search);
   };
 
   const fetchProject = async (id: number) => {
