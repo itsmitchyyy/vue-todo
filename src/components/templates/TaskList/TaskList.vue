@@ -2,12 +2,14 @@
 import { useDeleteTask, useFetchTasks } from "@/composables";
 import { useDebounce } from "@vueuse/core";
 import moment from "moment";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "vue-query";
+import Pagination from "../../molecules/Pagination/Pagination.vue";
 
 const queryClient = useQueryClient();
 
 const search = ref();
+const paginateParams = reactive({ page: 1, pageSize: 10 });
 
 const debouncedSearch = useDebounce(search, 500);
 
@@ -15,9 +17,9 @@ const { fetchTasks } = useFetchTasks();
 const { deleteTask } = useDeleteTask();
 
 const { data: tasks, isFetching: isFetchingTasks } = useQuery(
-  ["tasks", debouncedSearch],
+  ["tasks", debouncedSearch, paginateParams],
   () => {
-    return fetchTasks(debouncedSearch.value);
+    return fetchTasks(debouncedSearch.value, paginateParams);
   },
   {
     refetchOnMount: true,
@@ -36,6 +38,27 @@ const { mutate: deleteTaskMutation, isLoading: isDeletingTask } = useMutation(
 const handleDeleteTask = async (id: number) => {
   deleteTaskMutation(id);
 };
+
+const handlePrevPage = () => {
+  console.log(tasks.value?.pagination.current_page);
+  paginateParams.page = tasks.value?.pagination.current_page
+    ? tasks.value?.pagination.current_page - 1
+    : 1;
+};
+
+const handleNextPage = () => {
+  paginateParams.page = tasks.value?.pagination.current_page
+    ? tasks.value?.pagination.current_page + 1
+    : 1;
+};
+
+const handleChangePageSize = (size: number) => {
+  paginateParams.pageSize = size;
+};
+
+const handleChangePage = (size: number) => {
+  paginateParams.page = size;
+};
 </script>
 
 <template>
@@ -53,12 +76,12 @@ const handleDeleteTask = async (id: number) => {
       <div>Loading...</div>
     </template>
 
-    <template v-else-if="tasks?.length">
+    <template v-else-if="tasks?.data.length">
       <div class="list-group mt-4">
         <div
           class="list-group-item list-group-item-action"
           aria-current="true"
-          v-for="task in tasks"
+          v-for="task in tasks.data"
           :key="task.id"
         >
           <div class="d-flex w-100 justify-content-between">
@@ -87,10 +110,23 @@ const handleDeleteTask = async (id: number) => {
           </div>
         </div>
       </div>
+
+      <Pagination
+        :from="tasks.pagination.from"
+        :total-page="tasks.pagination.last_page"
+        :page-size="paginateParams.pageSize"
+        :total-records="tasks.pagination.total"
+        :current-page="tasks.pagination.current_page"
+        :to="tasks.pagination.to"
+        @next-page="handleNextPage"
+        @prev-page="handlePrevPage"
+        @on-records-per-page-change="handleChangePageSize"
+        @on-change-page-number="handleChangePage"
+      />
     </template>
 
     <template v-else>
-      <div>No Data Found</div>
+      <div>No data found</div>
     </template>
   </div>
 </template>

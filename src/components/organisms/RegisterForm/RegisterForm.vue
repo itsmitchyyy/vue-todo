@@ -25,8 +25,8 @@ watch(
   },
 );
 
-const handleSubmitRegister = () => {
-  emits("onSubmitRegister", formValues);
+const handleSubmitRegister = (values: any) => {
+  emits("onSubmitRegister", values);
 };
 </script>
 

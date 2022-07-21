@@ -1,3 +1,4 @@
+import type { PaginationQuery, PaginationRequest } from "@/domain/pagination";
 import type { AddProject, Project } from "@/domain/project";
 
 export type ProjectsHooks = {
@@ -5,7 +6,10 @@ export type ProjectsHooks = {
     addProject: (Project: AddProject) => Promise<void>;
   };
   useFetchProjects: () => {
-    fetchProjects: (search?: string) => Promise<Project[]>;
+    fetchProjects: (
+      search?: string,
+      paginateParams?: PaginationRequest,
+    ) => Promise<{ data: Project[]; pagination: PaginationQuery }>;
     fetchProject: (id: number) => Promise<Project>;
   };
   useDeleteProject: () => {

@@ -2,6 +2,7 @@ import type { AddTask, Task } from "@/domain/task";
 import type { URLsType } from "@/constants/urls";
 import type TaskRepository from "@/usecases/repositories/TaskRepository";
 import type { HttpAdapter } from "@/usecases/repositories/HttpAdapter";
+import type { PaginationQuery, PaginationRequest } from "@/domain/pagination";
 
 export default class TaskRepositoryImpl implements TaskRepository {
   httpAdapter: HttpAdapter;
@@ -34,12 +35,18 @@ export default class TaskRepositoryImpl implements TaskRepository {
     return response.data.data;
   };
 
-  fetchTasks = async (search?: string): Promise<Task[]> => {
+  fetchTasks = async (
+    search?: string,
+    paginateParams?: PaginationRequest,
+  ): Promise<{ data: Task[]; pagination: PaginationQuery }> => {
     const response = await this.httpAdapter.get(this.urls.tasks, {
-      params: { search },
+      params: { search, ...paginateParams },
     });
 
-    return response.data.data;
+    return {
+      data: response.data.data,
+      pagination: response.data.meta,
+    };
   };
 
   addTask = async (task: AddTask): Promise<void> => {

@@ -1,3 +1,4 @@
+import type { PaginationQuery, PaginationRequest } from "@/domain/pagination";
 import type { AddProject, Project } from "@/domain/project";
 import type { ProjectsHooks } from ".";
 import { projectInteractor } from "../dependencies";
@@ -13,11 +14,17 @@ export const useAddProject: ProjectsHooks["useAddProject"] = (): {
 };
 
 export const useFetchProjects: ProjectsHooks["useFetchProjects"] = (): {
-  fetchProjects: (search?: string) => Promise<Project[]>;
+  fetchProjects: (
+    search?: string,
+    paginateParams?: PaginationRequest,
+  ) => Promise<{ data: Project[]; pagination: PaginationQuery }>;
   fetchProject: (id: number) => Promise<Project>;
 } => {
-  const fetchProjects = async (search?: string) => {
-    return await projectInteractor.fetchProjects(search);
+  const fetchProjects = async (
+    search?: string,
+    paginateParams?: PaginationRequest,
+  ) => {
+    return await projectInteractor.fetchProjects(search, paginateParams);
   };
 
   const fetchProject = async (id: number) => {

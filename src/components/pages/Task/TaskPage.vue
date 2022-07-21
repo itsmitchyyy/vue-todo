@@ -7,7 +7,7 @@ import TaskLists from "@/components/templates/TaskList/TaskList.vue";
 <template>
   <Navbar />
   <div class="container mx-auto mt-5">
-    <div>
+    <div class="mb-3">
       <button
         @click="$router.push('/tasks/add-tasks')"
         class="btn btn-custom-style btn-outline-primary"
