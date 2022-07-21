@@ -7,7 +7,7 @@ import IconPlus from "@/components/atoms/Icons/IconPlus.vue";
 <template>
   <Navbar />
   <div class="container mx-auto mt-5">
-    <div>
+    <div class="pb-3">
       <button
         @click="$router.push('/projects/add-projects')"
         class="btn btn-custom-style btn-outline-primary"

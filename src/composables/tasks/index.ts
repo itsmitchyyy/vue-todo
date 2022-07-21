@@ -1,3 +1,4 @@
+import type { PaginationQuery, PaginationRequest } from "@/domain/pagination";
 import type { AddTask, Task } from "@/domain/task";
 
 export type TasksHooks = {
@@ -5,7 +6,10 @@ export type TasksHooks = {
     addTask: (task: AddTask) => Promise<void>;
   };
   useFetchTasks: () => {
-    fetchTasks: (search?: string) => Promise<Task[]>;
+    fetchTasks: (
+      search?: string,
+      paginateParams?: PaginationRequest,
+    ) => Promise<{ data: Task[]; pagination: PaginationQuery }>;
     fetchTask: (id: number) => Promise<Task>;
   };
   useDeleteTask: () => {

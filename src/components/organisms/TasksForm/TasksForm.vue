@@ -98,7 +98,7 @@ const handleSubmitTask = (values: any) => {
           {{ isFetchingProjects ? "Loading..." : "Project" }}
         </option>
         <option
-          v-for="project in projects"
+          v-for="project in projects?.data"
           :value="project.id"
           :key="project.id"
         >

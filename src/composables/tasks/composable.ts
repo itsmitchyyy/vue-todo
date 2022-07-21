@@ -1,3 +1,4 @@
+import type { PaginationQuery, PaginationRequest } from "@/domain/pagination";
 import type { AddTask, Task } from "@/domain/task";
 import type { TasksHooks } from ".";
 import { taskInteractor } from "../dependencies";
@@ -13,11 +14,17 @@ export const useAddTask: TasksHooks["useAddTask"] = (): {
 };
 
 export const useFetchTasks: TasksHooks["useFetchTasks"] = (): {
-  fetchTasks: () => Promise<Task[]>;
+  fetchTasks: (
+    search?: string,
+    paginateParams?: PaginationRequest,
+  ) => Promise<{ data: Task[]; pagination: PaginationQuery }>;
   fetchTask: (id: number) => Promise<Task>;
 } => {
-  const fetchTasks = async (search?: string) => {
-    return await taskInteractor.fetchTasks(search);
+  const fetchTasks = async (
+    search?: string,
+    paginateParams?: PaginationRequest,
+  ) => {
+    return await taskInteractor.fetchTasks(search, paginateParams);
   };
 
   const fetchTask = async (id: number) => {

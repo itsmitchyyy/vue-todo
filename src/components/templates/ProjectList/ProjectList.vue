@@ -2,21 +2,23 @@
 import { useDeleteProject, useFetchProjects } from "@/composables";
 import { useDebounce } from "@vueuse/core";
 import moment from "moment";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { useMutation, useQuery, useQueryClient } from "vue-query";
+import Pagination from "../../molecules/Pagination/Pagination.vue";
 
 const queryClient = useQueryClient();
 const { fetchProjects } = useFetchProjects();
 const { deleteProject } = useDeleteProject();
 
 const search = ref();
+const paginateParams = reactive({ page: 1, pageSize: 10 });
 
 const debouncedSearch = useDebounce(search, 500);
 
 const { data: projects, isFetching: isFetchingProjects } = useQuery(
-  ["projects", debouncedSearch],
+  ["projects", debouncedSearch, paginateParams],
   () => {
-    return fetchProjects(debouncedSearch.value);
+    return fetchProjects(debouncedSearch.value, paginateParams);
   },
   { refetchOnMount: true },
 );
@@ -32,6 +34,27 @@ const { mutate: deleteTaskMutation, isLoading: isDeletingTask } = useMutation(
 
 const handleDeleteProject = (id: number) => {
   deleteTaskMutation(id);
+};
+
+const handlePrevPage = () => {
+  console.log(projects.value?.pagination.current_page);
+  paginateParams.page = projects.value?.pagination.current_page
+    ? projects.value?.pagination.current_page - 1
+    : 1;
+};
+
+const handleNextPage = () => {
+  paginateParams.page = projects.value?.pagination.current_page
+    ? projects.value?.pagination.current_page + 1
+    : 1;
+};
+
+const handleChangePageSize = (size: number) => {
+  paginateParams.pageSize = size;
+};
+
+const handleChangePage = (size: number) => {
+  paginateParams.page = size;
 };
 </script>
 
@@ -49,12 +72,12 @@ const handleDeleteProject = (id: number) => {
     <template v-if="isFetchingProjects">
       <div>Loading...</div>
     </template>
-    <template v-else-if="projects?.length">
+    <template v-else-if="projects?.data.length">
       <div class="list-group mt-4">
         <div
           class="list-group-item list-group-item-action"
           aria-current="true"
-          v-for="project in projects"
+          v-for="project in projects?.data"
           :key="project.id"
         >
           <div class="d-flex w-100 justify-content-between">
@@ -85,9 +108,21 @@ const handleDeleteProject = (id: number) => {
           </div>
         </div>
       </div>
+      <Pagination
+        :from="projects.pagination.from"
+        :total-page="projects.pagination.last_page"
+        :page-size="paginateParams.pageSize"
+        :total-records="projects.pagination.total"
+        :current-page="projects.pagination.current_page"
+        :to="projects.pagination.to"
+        @next-page="handleNextPage"
+        @prev-page="handlePrevPage"
+        @on-records-per-page-change="handleChangePageSize"
+        @on-change-page-number="handleChangePage"
+      />
     </template>
     <template v-else>
-      <div>No data found</div>
+      <div>No Data Found</div>
     </template>
   </div>
 </template>
