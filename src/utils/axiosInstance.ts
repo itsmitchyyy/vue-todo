@@ -1,5 +1,5 @@
-import { useAuth } from "@/composables/auth";
-import { useAuthStore } from "@/stores/auth/auth";
+import { useSignOut } from "@/composables";
+import { useAuthStore } from "@/stores";
 import axios, { type AxiosRequestConfig } from "axios";
 
 axios.interceptors.request.use(
@@ -20,10 +20,11 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const { useLogout } = useAuth();
-    const { logout } = useLogout();
+    const authStore = useAuthStore();
+    const { signOut } = useSignOut();
     if (error.response.status === 401) {
-      await logout();
+      await signOut();
+      authStore.setCurrentUser(undefined);
       window.location.href = "/login";
     }
 
