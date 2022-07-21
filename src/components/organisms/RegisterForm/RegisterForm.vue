@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive, watch } from "vue";
 import type { RegisterFormProps, FormProps, TouchedInputProps } from "./types";
+import { RegisterFormSchema } from "./validation";
+import { Form, Field } from "vee-validate";
 
 defineProps<{
   errors: FormProps["errors"];
@@ -31,32 +33,37 @@ const handleSubmitRegister = () => {
 <template>
   <div class="login--container">
     <div class="login--form">
-      <form>
+      <Form
+        @submit="handleSubmitRegister"
+        :initial-values="formValues"
+        :validation-schema="RegisterFormSchema"
+        v-slot="{ errors: formErrors }"
+      >
         <div class="mb-3">
           <label for="staticEmail" class="col-sm-2 col-form-label">Name</label>
           <div class="col">
-            <input
+            <Field
               type="text"
-              v-model="formValues.name"
+              name="name"
               class="form-control"
-              :class="{ 'is-invalid': !!errors?.name }"
+              :class="{ 'is-invalid': !!errors?.name || formErrors?.name }"
             />
-            <div class="invalid-feedback" v-if="!!errors?.name">
-              {{ errors?.name[0] }}
+            <div class="invalid-feedback">
+              {{ errors?.name?.[0] || formErrors?.name }}
             </div>
           </div>
         </div>
         <div class="mb-3">
           <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
           <div class="col">
-            <input
+            <Field
               type="text"
-              v-model="formValues.email"
+              name="email"
               class="form-control"
-              :class="{ 'is-invalid': !!errors?.email }"
+              :class="{ 'is-invalid': !!errors?.email || formErrors?.email }"
             />
-            <div class="invalid-feedback" v-if="!!errors?.email">
-              {{ errors?.email[0] }}
+            <div class="invalid-feedback">
+              {{ errors?.email?.[0] || formErrors?.email }}
             </div>
           </div>
         </div>
@@ -65,30 +72,27 @@ const handleSubmitRegister = () => {
             >Password</label
           >
           <div class="col">
-            <input
+            <Field
               type="password"
-              v-model="formValues.password"
+              name="password"
               class="form-control"
-              :class="{ 'is-invalid': !!errors?.password }"
+              :class="{
+                'is-invalid': !!errors?.password || formErrors?.password,
+              }"
               id="inputPassword"
             />
-            <div class="invalid-feedback" v-if="!!errors?.password">
-              {{ errors?.password[0] }}
+            <div class="invalid-feedback">
+              {{ errors?.password?.[0] || formErrors?.email }}
             </div>
           </div>
         </div>
-        <button
-          :disabled="isLoading"
-          type="button"
-          @click="handleSubmitRegister"
-          class="btn btn-primary mb-3 w-100"
-        >
+        <button :disabled="isLoading" class="btn btn-primary mb-3 w-100">
           Submit
         </button>
         <div class="d-flex justify-content-center">
           <small>Already have an account? <a href="/login">Login now</a></small>
         </div>
-      </form>
+      </Form>
     </div>
   </div>
 </template>

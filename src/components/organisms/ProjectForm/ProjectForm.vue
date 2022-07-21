@@ -2,6 +2,8 @@
 import type { AddProject } from "@/domain/project";
 import { reactive, watch } from "vue";
 import type { FormProps, TouchedInputProps } from "./types";
+import { Form, Field } from "vee-validate";
+import { AddProjectSchema } from "./validation";
 
 const props = defineProps<{
   isLoading?: FormProps["isLoading"];
@@ -14,10 +16,7 @@ const emits = defineEmits<{
   (e: "onTouchedInput", touched: TouchedInputProps): void;
 }>();
 
-const formValues = reactive<AddProject>({
-  title: "",
-  description: "",
-});
+const formValues = reactive({ title: "", description: "" });
 
 watch(
   () => [formValues.title, formValues.description],
@@ -36,50 +35,55 @@ const unwatch = watch(
   },
 );
 
-const handleSubmitProject = () => {
+const handleSubmitProject = (values: any) => {
   unwatch();
-  emits("onSubmitProject", formValues);
+  emits("onSubmitProject", values);
 };
 </script>
 
 <template>
-  <div class="mb-3">
-    <label for="projectName" class="form-label">Project Name</label>
-    <input
-      type="text"
-      class="form-control"
-      :class="{ 'is-invalid': !!errors?.title }"
-      id="projectName"
-      placeholder="Project Name"
-      v-model="formValues.title"
-    />
-    <div class="invalid-feedback" v-if="!!errors?.title">
-      {{ errors?.title[0] }}
+  <Form
+    @submit="handleSubmitProject"
+    :validation-schema="AddProjectSchema"
+    :initial-values="formValues"
+    v-slot="{ errors: formErrors }"
+  >
+    <div class="mb-3">
+      <label for="projectName" class="form-label">Project Name</label>
+      <Field
+        type="text"
+        class="form-control"
+        :class="{ 'is-invalid': !!errors?.title || formErrors?.title }"
+        id="projectName"
+        placeholder="Project Name"
+        name="title"
+      />
+      <div class="invalid-feedback">
+        {{ errors?.title[0] || formErrors?.title }}
+      </div>
     </div>
-  </div>
-  <div class="mb-3">
-    <label for="projectDesciption" class="form-label"
-      >Project Description</label
-    >
-    <textarea
-      class="form-control"
-      :class="{ 'is-invalid': !!errors?.description }"
-      id="projectDesciption"
-      v-model="formValues.description"
-      rows="3"
-    ></textarea>
-    <div class="invalid-feedback" v-if="!!errors?.description">
-      {{ errors?.description[0] }}
+    <div class="mb-3">
+      <label for="projectDesciption" class="form-label"
+        >Project Description</label
+      >
+      <Field
+        as="textarea"
+        class="form-control"
+        :class="{
+          'is-invalid': !!errors?.description || formErrors?.description,
+        }"
+        id="projectDesciption"
+        name="description"
+        rows="3"
+      />
+      <div class="invalid-feedback">
+        {{ errors?.description?.[0] || formErrors?.title }}
+      </div>
     </div>
-  </div>
-  <div>
-    <button
-      type="button"
-      class="btn btn-primary w-100"
-      :disabled="isLoading"
-      @click="handleSubmitProject"
-    >
-      Submit
-    </button>
-  </div>
+    <div>
+      <button class="btn btn-primary w-100" :disabled="isLoading">
+        Submit
+      </button>
+    </div>
+  </Form>
 </template>
