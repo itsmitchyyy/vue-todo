@@ -17,8 +17,7 @@ const emits = defineEmits<{
   (e: "onTouchedInput", touched: TouchedInputProps): void;
 }>();
 
-const initialValues = { title: "", description: "", projectId: 0 };
-const formValues = reactive(initialValues);
+const formValues = reactive({ title: "", description: "", projectId: 0 });
 
 const unwatch = watch(
   () => props.task,
@@ -58,7 +57,7 @@ const handleSubmitTask = (values: any) => {
       <Field
         type="text"
         class="form-control"
-        :class="{ 'is-invalid': !!errors?.title || formErrors.title }"
+        :class="{ 'is-invalid': !!errors?.title || formErrors?.title }"
         id="taskName"
         placeholder="Task Name"
         name="title"
